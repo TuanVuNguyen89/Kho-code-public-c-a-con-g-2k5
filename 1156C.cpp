@@ -32,17 +32,12 @@ int main()
     for (int i = 1; i <= n; i++) cin >> a[i];
     sort (a + 1, a + n + 1);
 
-    int l = 0, r = n/2;
-
-    while (r - l > 2) {
-        int mid = (2 * l + r) / 3;
-        int mid2 = (l + 2 * r) / 3;
-
-        if (check(mid2)) l = mid;
-        else r = mid2;
+    int l = 0, r = n/2 + 1;
+    while (r - l > 1) {
+        int mid = (l + r)>>1;
+        if (check(mid)) l = mid;
+        else r = mid;
     }
-    if (check(r)) cout << r;
-    else if (check(r - 1)) cout << r - 1;
-    else cout << l;
+    cout << l;
 	return 0;
 }
