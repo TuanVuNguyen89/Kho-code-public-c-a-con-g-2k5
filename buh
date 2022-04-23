@@ -1,0 +1,101 @@
+/**
+*    Author :  Nguyen Tuan Vu
+*    Created : 23.04.2022
+**/
+
+#pragma GCC optimize("O2")
+#pragma GCC target("avx,avx2,fma")
+#include<bits/stdc++.h>
+
+template <class X, class Y> bool minimize(X &a, Y b) {
+    if (a > b) return a = b, true;
+    return false;
+}
+template <class X, class Y> bool maximize(X &a, Y b) {
+    if (a < b) return a = b, true;
+    return false;
+}
+
+using namespace std;
+
+#define int long long
+
+void file(){
+	#define TASK "TASK"
+	freopen(TASK".inp","r",stdin);
+	freopen(TASK".out","w",stdout);
+}
+
+const int N = 1e5 + 5;
+const int Mod = 1e9 + 7;
+int n, a[N], b[N];
+long long A[N], B[N];
+
+struct Fenwick_Tree{
+    vector <long long> bit, cnt;
+    Fenwick_Tree(int _n = 0) {
+        n = _n;
+        bit.resize(n + 7, 0);
+        cnt.resize(n + 7, 0);
+    }
+
+    void update(int u, long long x) {
+        for (; u <= n; u += u & -u) {
+            bit[u] += x;
+            cnt[u]++;
+        }
+    }
+
+    pair <long long, int> get(int u) {
+        long long ans = 0; int d = 0;
+        for (; u; u -= u & -u) {
+            ans += bit[u];
+            d += cnt[u];
+        }
+        return {ans, d};
+    }
+} mybit;
+
+main()
+{
+	ios_base::sync_with_stdio(0);cin.tie(0);cout.tie(0);
+	file();
+    cin >> n;
+    vector <int> ctz;
+    for (int i = 1; i <= n; i++) {
+        cin >> a[i];
+        ctz.push_back(a[i]);
+    }
+
+    sort (ctz.begin(), ctz.end());
+    ctz.erase(unique(ctz.begin(), ctz.end()), ctz.end());
+
+    for (int i = 1; i <= n; i++) b[i] = lower_bound(ctz.begin(), ctz.end(), a[i]) - ctz.begin() + 1;
+
+    mybit = Fenwick_Tree(n);
+    long long sum = 0;
+    for (int i = 1; i <= n; i++) {
+        auto [x, cnt] = mybit.get(b[i]);
+        A[i] = 1ll * a[i] * cnt - x;
+        A[i] += sum - x - 1ll * a[i] * (i - 1 - cnt);
+        sum += a[i];
+        mybit.update(b[i], a[i]);
+    }
+
+    mybit = Fenwick_Tree(n);
+    sum = 0;
+    for (int i = n; i >= 1; i--) {
+        auto [x, cnt] = mybit.get(b[i]);
+        B[i] = 1ll * a[i] * cnt - x;
+        B[i] += sum - x - 1ll * a[i] * (n - i - cnt);
+        sum += a[i];
+        mybit.update(b[i], a[i]);
+    }
+
+    int ans = 0;
+    for (int i = 1; i <= n; i++)
+        ans += 1ll * A[i] * B[i];
+
+    cout << ans % Mod;
+	return 0;
+}
