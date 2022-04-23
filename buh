@@ -18,8 +18,6 @@ template <class X, class Y> bool maximize(X &a, Y b) {
 
 using namespace std;
 
-#define int long long
-
 void file(){
 	#define TASK "TASK"
 	freopen(TASK".inp","r",stdin);
@@ -59,7 +57,7 @@ struct Fenwick_Tree{
 main()
 {
 	ios_base::sync_with_stdio(0);cin.tie(0);cout.tie(0);
-	file();
+//	file();
     cin >> n;
     vector <int> ctz;
     for (int i = 1; i <= n; i++) {
@@ -76,26 +74,33 @@ main()
     long long sum = 0;
     for (int i = 1; i <= n; i++) {
         auto [x, cnt] = mybit.get(b[i]);
+    //    cout << x << ' ' << cnt << ' ';
         A[i] = 1ll * a[i] * cnt - x;
         A[i] += sum - x - 1ll * a[i] * (i - 1 - cnt);
         sum += a[i];
         mybit.update(b[i], a[i]);
+     //   cout << A[i] << '\n';
     }
+
+    //cout << '\n';
 
     mybit = Fenwick_Tree(n);
     sum = 0;
     for (int i = n; i >= 1; i--) {
         auto [x, cnt] = mybit.get(b[i]);
+        //cout << x << ' ' << cnt << ' ';
         B[i] = 1ll * a[i] * cnt - x;
         B[i] += sum - x - 1ll * a[i] * (n - i - cnt);
         sum += a[i];
         mybit.update(b[i], a[i]);
+       // cout << B[i] << '\n';
     }
 
     int ans = 0;
-    for (int i = 1; i <= n; i++)
-        ans += 1ll * A[i] * B[i];
+    for (int i = 1; i <= n; i++) {
+        ans = (ans + 1ll * A[i] % Mod * B[i] % Mod) % Mod;
+    }
 
-    cout << ans % Mod;
+    cout << ans;
 	return 0;
 }
